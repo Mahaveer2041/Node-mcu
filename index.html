@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LED Control</title>
+</head>
+<body>
+  <h1>Control the LED</h1>
+  <p>LED Status: <span id="ledStatus">Unknown</span></p>
+  <button id="toggleButton">Toggle LED</button>
+
+  <script>
+    const ledStatusElement = document.getElementById('ledStatus');
+    const toggleButton = document.getElementById('toggleButton');
+
+    // Function to update LED status on the web page
+    const updateLedStatus = () => {
+      fetch('/api/led')
+        .then(response => response.json())
+        .then(data => {
+          const status = data.isLedOn ? 'On' : 'Off';
+          ledStatusElement.textContent = status;
+        })
+        .catch(error => console.error(error));
+    };
+
+    // Update LED status when the page loads
+    updateLedStatus();
+
+    // Toggle the LED when the button is clicked
+    toggleButton.addEventListener('click', () => {
+      fetch('/api/led', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ state: 'on' }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          updateLedStatus();
+        })
+        .catch(error => console.error(error));
+    });
+  </script>
+</body>
+</html>
